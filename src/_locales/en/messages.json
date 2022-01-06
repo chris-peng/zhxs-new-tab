@@ -1,0 +1,12 @@
+{
+    "pluginName": {"message": "New Tab - Dawn Blossoms Plucked at Dusk"},
+    "shortName": {"message": "Dawn Blossoms Plucked at Dusk"},
+    "pluginDesc": {"message": "Regain the throbbing when collecting"},
+    "searchEngine": {"message": "Search Engine"},
+    "baidu": {"message": "Baidu"},
+    "bookmarkOpenType": {"message": "Open Bookmark In"},
+    "thistab": {"message": "Current Tab"},
+    "newtab": {"message": "New Tab"},
+    "backgroundOpen": {"message": "Background Open"},
+    "bookmarkCount": {"message": "Number of Random Bookmarks"}
+}

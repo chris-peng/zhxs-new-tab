@@ -1,0 +1,12 @@
+{
+    "pluginName": {"message": "朝花夕拾-新标签页"},
+    "shortName": {"message": "朝花夕拾"},
+    "pluginDesc": {"message": "重拾收藏时的怦然心动"},
+    "searchEngine": {"message": "搜索引擎"},
+    "baidu": {"message": "百度"},
+    "bookmarkOpenType": {"message": "打开书签"},
+    "thistab": {"message": "当前标签页"},
+    "newtab": {"message": "新标签页"},
+    "backgroundOpen": {"message": "后台打开"},
+    "bookmarkCount": {"message": "随机书签数量"}
+}

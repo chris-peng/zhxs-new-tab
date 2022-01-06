@@ -1,0 +1,210 @@
+body {
+    overflow: hidden;
+}
+
+.percents {
+    position: absolute;
+    left: 0;
+    top: 46%;
+    color: white;
+    margin-left: -2.5rem;
+    font-size: 1.5rem;
+    opacity: 0;
+}
+
+.percents.fadein {
+    -webkit-transition: 6s ease-out;
+    transition: 6s ease-out;
+    opacity: 100;
+}
+
+.percents.fadeout {
+    -webkit-transition: 3s ease-in;
+    transition: 3s ease-in;
+    opacity: 0;
+}
+
+.search-ctn {
+    position: absolute;
+    top: 10%;
+    width: 100%;
+    text-align: center;
+    z-index: 999;
+    background-color: transparent;
+}
+
+.search-ctn input {
+    display: inline-block;
+    width: 50%;
+    border: 0px solid black;
+    border-radius: 1.6rem;
+    height: 2rem;
+    padding: 0.5rem 2rem;
+    font-size: 1.8rem;
+    font-weight: bold;
+    outline: none;
+    background-color: transparent;
+    color: #eeeeee;
+    text-align: center;
+}
+
+.clear-text {
+    text-shadow: 2px 0 2px black,0 2px 2px black,-2px 0 2px black,0 -2px 2px black;
+}
+
+.setting {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    z-index: 999;
+}
+
+.setting a {
+    background-image: url(img/setting.png);
+    background-size: cover;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+.refresh {
+    position: absolute;
+    right: 3rem;
+    bottom: 1rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    z-index: 999;
+}
+
+.refresh a {
+    background-image: url(img/refresh.png);
+    background-size: cover;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+.c-window {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    /* display: flex; */
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.c-window .window-content {
+    background-color: white;
+    display: inline-block;
+}
+
+.clear-box-shadow {
+    box-shadow: 2px 2px 1rem black, -2px -2px 1rem #eeeeee;
+}
+
+.c-window form {
+    padding: 0.5rem 2rem 1rem 2rem;
+}
+
+.c-window form .form-item {
+    margin: 1rem 0;
+}
+
+.c-window .window-tools {
+    text-align: right;
+    padding-top: 0.5rem;
+}
+.window-tools .window-tool {
+    color: black;
+    padding: 0.5rem;
+    text-decoration: none;
+}
+
+.suggestions-ctn {
+    list-style: none;
+    color: white;
+    font-size: 1.2rem;
+    display: inline-block;
+    width: 50%;
+    margin: 0;
+    padding: 0;
+    margin-top: 1rem;
+}
+
+.suggestions-ctn li span {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    font-style: italic;
+    cursor: pointer;
+}
+
+.suggestions-ctn li span:hover {
+    text-decoration: underline;
+}
+
+.flower-ctn {
+    position: absolute;
+    bottom: 3rem;
+    text-align: center;
+    width: 100%;
+}
+
+.flower-ctn .icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 25%;
+    background-color: rgba(0, 0, 0, 0.7);
+    margin: 0 3rem 0 3rem;
+}
+
+.flower-ctn .icon-ani-ini{
+    transform: translate(0,-2.5rem);
+    opacity: 0;
+}
+
+.flower-ctn .icon-ani{
+    transform: translate(0,0);
+    transition:all .4s;
+    transition-timing-function: ease-out;
+    transition-delay: 200ms;
+    opacity: 1;
+}
+
+.flower-ground {
+    /* width: 50%;
+    left: 25%; */
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.2);
+    position: absolute;
+    bottom: 2rem;
+    border-radius: 100%;
+    border-top: 1px rgba(0, 0, 0, 0.2) solid;
+}
+
+#rightMenu {
+    list-style: none;
+    background: rgba(0, 0, 0, 0.7);
+    margin: 0px;
+    padding: 5px;
+    position: absolute;
+    /*left: 0px;*/
+    top: 0px;
+    display: none;
+}
+
+#rightMenu li {
+    padding: 0.2rem;
+    cursor: pointer;
+    color: #aaaaaa;
+    font-size: 0.5rem;
+}
+
+#rightMenu li:hover {
+    background: black;
+    color: white;
+    font-size: 0.8rem;
+}
