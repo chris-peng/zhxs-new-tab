@@ -94,7 +94,7 @@ function initSearch(){
     var oldKeyword = '';
     searchInput.onkeyup = function(e){
         if(e.keyCode == 13){
-            doSearch(this.value);
+            doSearch(this.value, $('.suggestions-ctn li span.clear-box-shadow'));
             return;
         }
         if(e.keyCode == 27){
@@ -117,9 +117,10 @@ function initSearch(){
         var timer = setTimeout(function(){
             clearTimeout(timer);
             suggestionsCtn.innerHTML = '';
-            var callbackName = randomCallbackName();
-            Ajax.get('http://suggestion.baidu.com/su?' + formatParams({wd: keyword, t: new Date().getTime(), cb: 'onSuggestionReceived'}), function(r){
-                eval(r);
+            chrome.bookmarks.search(keyword, function(relatedBookmarks){
+                Ajax.get('http://suggestion.baidu.com/su?' + formatParams({wd: keyword, t: new Date().getTime(), action: 'opensearch'}), function(r){
+                    onSuggestionReceived(JSON.parse(r), relatedBookmarks);
+                });
             });
         }, 200);
     };
@@ -140,21 +141,41 @@ function initSearch(){
 
 
 //搜索建议相关事件
-function onSuggestionReceived(r){
+function onSuggestionReceived(r, relatedBookmarks){
+    var suggestionLimit = 10;
+    var suggestionBookmarkLimit = 4;
     var suggestionsHtml = '';
-    if(r.s && r.s.length > 0){
-        r.s.forEach(function(v, i){
-            suggestionsHtml += '<li><span>' + v + '</span></li>';
-        });
-        currentSelectSuggestionIndex = -1;
-        suggestionsCtn.innerHTML = suggestionsHtml;
-        $$('.suggestions-ctn li span').forEach(function(v, i){
-            v.onclick = function(){doSearch(this.innerText)};
+    if(relatedBookmarks && relatedBookmarks.length < 30){
+        var suggestionCount = 0;
+        relatedBookmarks.forEach(function(v, i){
+            if(suggestionCount >= suggestionBookmarkLimit){
+                return false;
+            }
+            suggestionsHtml += '<li><span class="suggestion-bookmark" data-href="' + v.url + '" title="' + v.title + '">' + '🔖 ' + ellipsis(v.title, 15) + '</span></li>';
+            suggestionCount++;
         });
     }
+    if(r.length>1){
+        r[1].forEach(function(v, i){
+            if(suggestionCount >= suggestionLimit){
+                return false;
+            }
+            suggestionsHtml += '<li><span class="suggestion-keyword">' + v + '</span></li>';
+            suggestionCount++;
+        });
+    }
+    currentSelectSuggestionIndex = -1;
+    suggestionsCtn.innerHTML = suggestionsHtml;
+    $$('.suggestions-ctn li span').forEach(function(v, i){
+        v.onclick = function(){doSearch(this.innerText, this)};
+    });
 }
-function doSearch(keyword){
-    window.location.href = SearchEngines[Settings.searchEngine].replace('{keyword}', keyword);
+function doSearch(keyword, suggestionEl){
+    if(suggestionEl && suggestionEl.getAttribute('data-href')){
+        window.location.href = suggestionEl.getAttribute('data-href');
+    } else {
+        window.location.href = SearchEngines[Settings.searchEngine].replace('{keyword}', keyword);
+    }
 }
 var currentSelectSuggestionIndex = -1;
 function preSuggestion(){
@@ -305,7 +326,9 @@ function findBookmarks(b){
     var subBookmarks = [];
     if(b.children){
         for(var i = 0; i < b.children.length; i++){
-            subBookmarks = subBookmarks.concat(findBookmarks(b.children[i]));
+            b.children[i].parentPath = (b.parentPath ? (b.parentPath + ' -> ') : '') + b.title;
+            var subSubBookmarks = findBookmarks(b.children[i]);
+            subBookmarks = subBookmarks.concat(subSubBookmarks);
         }
     } else if(b.url){
         subBookmarks.push(b);
@@ -325,13 +348,14 @@ function getTimeDiff(milsecs){
     return (years > 0 ? (years + '年') : '') + days + '天之前';
 }
 
-function ellipsis(s){
+function ellipsis(s, maxLength){
     if(!s){
         return s;
     }
+    maxLength = maxLength ? maxLength : 30;
     s = s + '';
-    if(s.length > 33){
-        return s.substr(0, 30) + '...';
+    if(s.length > maxLength + 3){
+        return s.substr(0, maxLength) + '...';
     }
     return s;
 }
@@ -415,7 +439,7 @@ function displayBookmarks(){
     for(var i = 0; i < bookmarks.length; i++){
         var bm = bookmarks[i];
         showedBookmarks[bm.id + ''] = bm;
-        var tip = getTimeDiff(bm.dateAdded) + '&#10;' + ellipsis(bm.title) + '&#10;' + ellipsis(bm.url);
+        var tip = getTimeDiff(bm.dateAdded) + '&#10;' + ellipsis(bm.title) + '&#10;@' + ellipsis(bm.parentPath) + '&#10;' + ellipsis(bm.url);
         html += '<a deta-title title="' + tip + '" href="###" data-href="' + bm.url + '"><img data-id="' + bm.id + '" class="icon icon-ani-ini" src="chrome://favicon/' + bm.url + '" /></a>';
     }
     flowerCtn.innerHTML = html;
