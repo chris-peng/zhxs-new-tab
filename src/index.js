@@ -119,7 +119,7 @@ function initSearch(){
             suggestionsCtn.innerHTML = '';
             chrome.bookmarks.search(keyword, function(relatedBookmarks){
                 Ajax.get('http://suggestion.baidu.com/su?' + formatParams({wd: keyword, t: new Date().getTime(), action: 'opensearch'}), function(r){
-                    onSuggestionReceived(JSON.parse(r), relatedBookmarks);
+                    onSuggestionReceived(JSON.parse(r), relatedBookmarks, keyword);
                 });
             });
         }, 200);
@@ -141,11 +141,11 @@ function initSearch(){
 
 
 //搜索建议相关事件
-function onSuggestionReceived(r, relatedBookmarks){
+function onSuggestionReceived(r, relatedBookmarks, keyword){
     var suggestionLimit = 10;
     var suggestionBookmarkLimit = 4;
     var suggestionsHtml = '';
-    if(relatedBookmarks && relatedBookmarks.length < 30){
+    if(relatedBookmarks && (relatedBookmarks.length < 30 || keyword.length >= 4)){
         var suggestionCount = 0;
         relatedBookmarks.forEach(function(v, i){
             if(suggestionCount >= suggestionBookmarkLimit){
