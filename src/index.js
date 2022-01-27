@@ -166,7 +166,7 @@ function onSuggestionReceived(r, relatedBookmarks, keyword){
             suggestionsHtml += '<li><span class="suggestion-bookmark" data-href="' + v.url + '" title="' + v.title + '">' + '🔖 ' + ellipsis(v.title) + '</span></li>';
             suggestionCount++;
         });
-        if(suggestionCount > 0 && !showAllBookmarks){
+        if(suggestionCount > 0 && !showAllBookmarks && relatedBookmarks.length > suggestionCount){
             suggestionsHtml += '<li><span class="suggestion-allbookmark" data-type="showAllBookmarks" title="Show all bookmarks">🔖 ...</span></li>';
             suggestionCount++;
         }
