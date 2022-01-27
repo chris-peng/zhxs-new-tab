@@ -73,6 +73,8 @@ function initSettings(){
 }
 
 //搜索框
+var showAllBookmarks = false;
+var oldKeyword = '';
 function initSearch(){
     $('body').onkeyup = function(e){
         if(e.keyCode == 27){
@@ -91,14 +93,14 @@ function initSearch(){
     $('body').onkeypress = function(e){
         searchInput.focus();
     }
-    var oldKeyword = '';
     searchInput.onkeyup = function(e){
         if(e.keyCode == 13){
-            doSearch(this.value, $('.suggestions-ctn li span.clear-box-shadow'));
+            doSearch(this.value, $('.suggestions-ctn li span.selected'));
             return;
         }
         if(e.keyCode == 27){
             //ESC
+            showAllBookmarks = false;
             return;
         }
         if(e.keyCode == 38){
@@ -110,19 +112,14 @@ function initSearch(){
             return;
         }
         var keyword = searchInput.value;
+        if(keyword == ''){
+            showAllBookmarks = false;
+        }
         if(keyword == oldKeyword){
             return;
         }
         oldKeyword = keyword;
-        var timer = setTimeout(function(){
-            clearTimeout(timer);
-            suggestionsCtn.innerHTML = '';
-            chrome.bookmarks.search(keyword, function(relatedBookmarks){
-                Ajax.get('http://suggestion.baidu.com/su?' + formatParams({wd: keyword, t: new Date().getTime(), action: 'opensearch'}), function(r){
-                    onSuggestionReceived(JSON.parse(r), relatedBookmarks, keyword);
-                });
-            });
-        }, 200);
+        showSuggestions(keyword);
     };
     
     searchInput.onkeydown = function(e){
@@ -139,13 +136,28 @@ function initSearch(){
     }
 }
 
+function showSuggestions(keyword){
+    var timer = setTimeout(function(){
+        clearTimeout(timer);
+        suggestionsCtn.innerHTML = '';
+        chrome.bookmarks.search(keyword, function(relatedBookmarks){
+            Ajax.get('http://suggestion.baidu.com/su?' + formatParams({wd: keyword, t: new Date().getTime(), action: 'opensearch'}), function(r){
+                onSuggestionReceived(JSON.parse(r), relatedBookmarks, keyword);
+            });
+        });
+    }, 200);
+}
+
 
 //搜索建议相关事件
 function onSuggestionReceived(r, relatedBookmarks, keyword){
     var suggestionLimit = 10;
-    var suggestionBookmarkLimit = 4;
+    var suggestionBookmarkLimit = 3;
+    if(showAllBookmarks){
+        suggestionBookmarkLimit = Infinity;
+    }
     var suggestionsHtml = '';
-    if(relatedBookmarks && (relatedBookmarks.length < 30 || keyword.length >= 4)){
+    if(relatedBookmarks){
         var suggestionCount = 0;
         relatedBookmarks.forEach(function(v, i){
             if(suggestionCount >= suggestionBookmarkLimit){
@@ -154,6 +166,10 @@ function onSuggestionReceived(r, relatedBookmarks, keyword){
             suggestionsHtml += '<li><span class="suggestion-bookmark" data-href="' + v.url + '" title="' + v.title + '">' + '🔖 ' + ellipsis(v.title) + '</span></li>';
             suggestionCount++;
         });
+        if(suggestionCount > 0 && !showAllBookmarks){
+            suggestionsHtml += '<li><span class="suggestion-allbookmark" data-type="showAllBookmarks" title="Show all bookmarks">🔖 ...</span></li>';
+            suggestionCount++;
+        }
     }
     if(r.length>1){
         r[1].forEach(function(v, i){
@@ -173,6 +189,9 @@ function onSuggestionReceived(r, relatedBookmarks, keyword){
 function doSearch(keyword, suggestionEl){
     if(suggestionEl && suggestionEl.getAttribute('data-href')){
         window.location.href = suggestionEl.getAttribute('data-href');
+    } else if(suggestionEl && suggestionEl.getAttribute('data-type') == 'showAllBookmarks'){
+        showAllBookmarks = true;
+        showSuggestions(oldKeyword);
     } else {
         window.location.href = SearchEngines[Settings.searchEngine].replace('{keyword}', keyword);
     }
@@ -184,10 +203,18 @@ function preSuggestion(){
     }
     if(currentSelectSuggestionIndex >= 0 && currentSelectSuggestionIndex < suggestionsCtn.childNodes.length){
         suggestionsCtn.childNodes[currentSelectSuggestionIndex].childNodes[0].classList.remove('clear-box-shadow');
+        suggestionsCtn.childNodes[currentSelectSuggestionIndex].childNodes[0].classList.remove('selected');
     }
     currentSelectSuggestionIndex--;
-    suggestionsCtn.childNodes[currentSelectSuggestionIndex].childNodes[0].classList.add('clear-box-shadow');
-    searchInput.value = suggestionsCtn.childNodes[currentSelectSuggestionIndex].childNodes[0].innerHTML;
+    var selectedSuggestionEl = suggestionsCtn.childNodes[currentSelectSuggestionIndex].childNodes[0];
+    selectedSuggestionEl.classList.add('clear-box-shadow');
+    selectedSuggestionEl.classList.add('selected');
+    selectedSuggestionEl.scrollIntoView(false);
+    if(selectedSuggestionEl.classList.contains('suggestion-keyword')){
+        searchInput.value = selectedSuggestionEl.innerHTML;
+    } else {
+        searchInput.value = oldKeyword;
+    }
 }
 function nextSuggestion(){
     if(currentSelectSuggestionIndex >= suggestionsCtn.childNodes.length - 1){
@@ -195,10 +222,18 @@ function nextSuggestion(){
     }
     if(currentSelectSuggestionIndex >= 0 && currentSelectSuggestionIndex < suggestionsCtn.childNodes.length){
         suggestionsCtn.childNodes[currentSelectSuggestionIndex].childNodes[0].classList.remove('clear-box-shadow');
+        suggestionsCtn.childNodes[currentSelectSuggestionIndex].childNodes[0].classList.remove('selected');
     }
     currentSelectSuggestionIndex++;
-    suggestionsCtn.childNodes[currentSelectSuggestionIndex].childNodes[0].classList.add('clear-box-shadow');
-    searchInput.value = suggestionsCtn.childNodes[currentSelectSuggestionIndex].childNodes[0].innerHTML;
+    var selectedSuggestionEl = suggestionsCtn.childNodes[currentSelectSuggestionIndex].childNodes[0];
+    selectedSuggestionEl.classList.add('clear-box-shadow');
+    selectedSuggestionEl.classList.add('selected');
+    selectedSuggestionEl.scrollIntoView(false);
+    if(selectedSuggestionEl.classList.contains('suggestion-keyword')){
+        searchInput.value = selectedSuggestionEl.innerHTML;
+    } else {
+        searchInput.value = oldKeyword;
+    }
 }
 
 function initRefreshBtn(){
