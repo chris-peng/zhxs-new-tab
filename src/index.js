@@ -151,7 +151,7 @@ function onSuggestionReceived(r, relatedBookmarks){
             if(suggestionCount >= suggestionBookmarkLimit){
                 return false;
             }
-            suggestionsHtml += '<li><span class="suggestion-bookmark" data-href="' + v.url + '" title="' + v.title + '">' + '🔖 ' + ellipsis(v.title, 15) + '</span></li>';
+            suggestionsHtml += '<li><span class="suggestion-bookmark" data-href="' + v.url + '" title="' + v.title + '">' + '🔖 ' + ellipsis(v.title) + '</span></li>';
             suggestionCount++;
         });
     }
