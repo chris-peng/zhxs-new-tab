@@ -75,6 +75,7 @@ function initSettings(){
 //搜索框
 var showAllBookmarks = false;
 var oldKeyword = '';
+var inputFinishFlag = true;
 function initSearch(){
     $('body').onkeyup = function(e){
         if(e.keyCode == 27){
@@ -90,12 +91,24 @@ function initSearch(){
             searchInput.focus();
         }
     }
-    $('body').onkeypress = function(e){
+    $('body').onkeydown = function(e){
         searchInput.focus();
     }
+    searchInput.addEventListener('compositionstart', function(){
+        inputFinishFlag = false;
+    });
+    searchInput.addEventListener('compositionend', function(){
+        setTimeout(function() {
+            inputFinishFlag = true;
+        }, 150);
+    });
     searchInput.onkeyup = function(e){
         if(e.keyCode == 13){
-            doSearch(this.value, $('.suggestions-ctn li span.selected'));
+            if(inputFinishFlag){
+                doSearch(this.value, $('.suggestions-ctn li span.selected'));
+            } else {
+                inputFinishFlag = true;
+            }
             return;
         }
         if(e.keyCode == 27){
