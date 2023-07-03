@@ -488,7 +488,7 @@ function displayBookmarks(){
         var bm = bookmarks[i];
         showedBookmarks[bm.id + ''] = bm;
         var tip = getTimeDiff(bm.dateAdded) + '&#10;' + ellipsis(bm.title) + '&#10;@' + ellipsis(bm.parentPath) + '&#10;' + ellipsis(bm.url);
-        html += '<a deta-title title="' + tip + '" href="###" data-href="' + bm.url + '"><img data-id="' + bm.id + '" class="icon icon-ani-ini" src="chrome://favicon/size/48/' + bm.url + '" /></a>';
+        html += '<a deta-title title="' + tip + '" href="###" data-href="' + bm.url + '"><img data-id="' + bm.id + '" class="icon icon-ani-ini" src="chrome://favicon/size/48/' + getMainSiteUrl(bm.url) + '" /></a>';
     }
     flowerCtn.innerHTML = html;
     detaTitle();
@@ -524,4 +524,15 @@ function openBookmark(e){
     } else {
         window.location.href = url;
     }
+}
+
+function getMainSiteUrl(url){
+    if(!url || url.length == 0){
+        return url;
+    }
+    var sep1 = url.indexOf('://');
+    if(sep1 <= 0){
+        return url;
+    }
+    return url.substring(0, url.substring(sep1 + 3).indexOf('/') + sep1 + 3);
 }
