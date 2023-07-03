@@ -534,5 +534,9 @@ function getMainSiteUrl(url){
     if(sep1 <= 0){
         return url;
     }
-    return url.substring(0, url.substring(sep1 + 3).indexOf('/') + sep1 + 3);
+    var sep2 = url.substring(sep1 + 3).indexOf('/');
+    if(sep2 < 0){
+        return url;
+    }
+    return url.substring(0, sep2 + sep1 + 3);
 }
