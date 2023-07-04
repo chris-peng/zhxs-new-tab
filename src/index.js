@@ -488,7 +488,7 @@ function displayBookmarks(){
         var bm = bookmarks[i];
         showedBookmarks[bm.id + ''] = bm;
         var tip = getTimeDiff(bm.dateAdded) + '&#10;' + ellipsis(bm.title) + '&#10;@' + ellipsis(bm.parentPath) + '&#10;' + ellipsis(bm.url);
-        html += '<a deta-title title="' + tip + '" href="###" data-href="' + bm.url + '"><img data-id="' + bm.id + '" class="icon icon-ani-ini" src="chrome://favicon/size/48/' + getMainSiteUrl(bm.url) + '" /></a>';
+        html += '<a deta-title title="' + tip + '" href="###" data-href="' + bm.url + '"><img data-id="' + bm.id + '" class="icon icon-ani-ini" src="' + getFavoriteUrl(getMainSiteUrl(bm.url)) + '" /></a>';
     }
     flowerCtn.innerHTML = html;
     detaTitle();
@@ -539,4 +539,8 @@ function getMainSiteUrl(url){
         return url;
     }
     return url.substring(0, sep2 + sep1 + 3);
+}
+
+function getFavoriteUrl(siteUrl){
+    return '/_favicon/?pageUrl=' + encodeURIComponent(siteUrl) + '&size=32';
 }
